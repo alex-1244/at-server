@@ -3,49 +3,28 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 
-namespace at_server
+namespace AtServer
 {
 	class Program
 	{
 		static void Main(string[] args)
 		{
-			IPAddress address = IPAddress.Parse("127.0.0.1");
-			var listener = new TcpListener(address, 9990);
+			var cts = new CancellationTokenSource();
+			
+			var server = new Server(new UrlParser());
+			server.Start(cts.Token);
 
-			listener.Start();
-
-			while (true)
+			string line = Console.ReadLine();
+			while (line != "quit")
 			{
-				var clientTask = listener.AcceptTcpClientAsync();
 
-				if (clientTask.Result == null) continue;
 
-				var client = clientTask.Result;
-
-				var requestStream = client.GetStream();
-				byte[] data = new byte[1024];
-
-				using (var ms = new MemoryStream())
-				{
-					int numBytesRead = requestStream.Read(data, 0, data.Length);
-					ms.Write(data, 0, numBytesRead);
-
-					while (numBytesRead == data.Length)
-					{
-						numBytesRead = requestStream.Read(data, 0, data.Length);
-						ms.Write(data, 0, numBytesRead);
-					}
-
-					requestStream.Dispose();
-					requestStream.Close();
-
-					var str = Encoding.ASCII.GetString(ms.ToArray(), 0, (int)ms.Length);
-					Console.WriteLine(str);
-				}
+				line = Console.ReadLine();
 			}
 
-			Console.ReadKey();
+			cts.Cancel();
 		}
 	}
 }
