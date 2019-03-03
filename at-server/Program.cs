@@ -28,7 +28,6 @@ namespace at_server
 
 				using (var ms = new MemoryStream())
 				{
-
 					int numBytesRead = requestStream.Read(data, 0, data.Length);
 					ms.Write(data, 0, numBytesRead);
 
@@ -38,10 +37,15 @@ namespace at_server
 						ms.Write(data, 0, numBytesRead);
 					}
 
+					requestStream.Dispose();
+					requestStream.Close();
+
 					var str = Encoding.ASCII.GetString(ms.ToArray(), 0, (int)ms.Length);
 					Console.WriteLine(str);
 				}
 			}
+
+			Console.ReadKey();
 		}
 	}
 }
