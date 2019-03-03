@@ -1,4 +1,4 @@
-﻿namespace AtServer
+﻿namespace AtCommon
 {
 	public enum Method
 	{

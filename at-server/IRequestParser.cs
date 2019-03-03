@@ -1,4 +1,6 @@
-﻿namespace AtServer
+﻿using AtCommon;
+
+namespace AtServer
 {
 	public interface IRequestParser
 	{

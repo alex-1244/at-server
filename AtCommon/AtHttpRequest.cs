@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace AtServer
+namespace AtCommon
 {
 	public class AtHttpRequest
 	{
