@@ -7,7 +7,7 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
 using System.Threading;
-using AtApplication;
+using AtCommon;
 
 namespace AtServer
 {
@@ -72,6 +72,8 @@ Content-Type: application/json; charset=utf-8
 					}
 				}
 			}
+
+			listener.Stop();
 		}
 
 		public void RegisterApplication(string applicationPath)
