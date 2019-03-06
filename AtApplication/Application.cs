@@ -11,7 +11,7 @@ namespace AtApplication
 	{
 		private readonly IDictionary<Type, IEnumerable<MethodInfo>> _application;
 
-		protected Application()
+		public Application()
 		{
 			var controllers = Assembly.GetExecutingAssembly().GetTypes()
 				.Where(x => x.GetInterfaces().Contains(typeof(IController)));
@@ -20,15 +20,16 @@ namespace AtApplication
 				x => x,
 				x => x.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance).Where(
 					m => m.GetParameters().Length == 1 &&
-					   m.GetParameters().First().ParameterType == typeof(AtHttpRequest)
+					   m.GetParameters().First().ParameterType == typeof(AtHttpRequest) &&
+						 m.ReturnType.IsSubclassOf(typeof(HttpResponse))
 					   ).ToList().AsEnumerable());
 		}
 
-		public virtual string Process(AtHttpRequest request)
+		public virtual Response Process(AtHttpRequest request)
 		{
 			if (request.Uri.Segments.Length < 3)
 			{
-				return string.Empty;
+				return new HttpResponse();
 			}
 
 			var controllerName = request.Uri.Segments[1];
@@ -38,30 +39,25 @@ namespace AtApplication
 
 			if (controller == null)
 			{
-				return string.Empty;
+				return new HttpResponse();
 			}
 
 			var action = _application[controller].FirstOrDefault(x => x.Name.ToLower().Contains(actionName));
 
 			if (action == null)
 			{
-				return string.Empty;
+				return new HttpResponse();
 			}
 
-			return action.Invoke(Activator.CreateInstance(controller), new object[] { request.Parameters }).ToString();
+			return (HttpResponse)(action.Invoke(Activator.CreateInstance(controller), new object[] { request.Parameters }));
 		}
 	}
 
 	public class Application1 : Application
 	{
-		public override string Process(AtHttpRequest req)
+		public override Response Process(AtHttpRequest req)
 		{
-			return @"{
-						""userId"": 1,
-						""id"": 1,
-						""title"": ""delectus aut autem"",
-						""completed"": false
-					}";
+			return new HttpResponse();
 		}
 	}
 }

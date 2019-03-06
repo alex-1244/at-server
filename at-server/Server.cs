@@ -96,7 +96,7 @@ Content-Type: application/json; charset=utf-8
 
 			foreach (var application in this._applications)
 			{
-				var result = application.Process(request);
+				var result = application.Process(request).ToString();
 
 				if (!string.IsNullOrEmpty(result))
 				{
